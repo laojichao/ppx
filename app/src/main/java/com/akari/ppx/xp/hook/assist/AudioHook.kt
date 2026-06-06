@@ -22,13 +22,22 @@ import java.io.File
 import java.io.FileOutputStream
 import java.lang.Enum.valueOf
 
+/**
+ * 视频音频提取Hook。
+ *
+ * 在视频帖子的分享菜单中新增"保存音频"选项，
+ * 下载视频后使用mp4parser库分离音频轨并保存为AAC文件到DCIM目录。
+ * 仅对视频类型帖子有效，图片帖子会提示无法提取。
+ */
 class AudioHook : SwitchHook("save_audio") {
     override fun onHook() {
+        // 获取ACTION_LIVE_WALLPAPER枚举值，复用其分享选项位来注入"保存音频"选项
         val actionType = valueOf(
             "com.sup.android.i_sharecontroller.model.OptionAction\$OptionActionType".findClass(cl) as Class<Enum<*>>,
             "ACTION_LIVE_WALLPAPER"
         )
 
+        // 扩展MethodHookParam，在已有的操作类型数组中追加"保存音频"选项
         fun XC_MethodHook.MethodHookParam.addOption() {
             result = (result as Array<Any>).plus(actionType)
         }
@@ -43,6 +52,7 @@ class AudioHook : SwitchHook("save_audio") {
         ) { param ->
             param.addOption()
         }
+        // 拦截分享选项按钮的setTag，将新增选项的显示文字改为"保存音频"
         View::class.java.name.hookBeforeMethod(cl, "setTag", Object::class.java) { param ->
             runCatching {
                 param.args[0].check(actionType) {
@@ -50,8 +60,9 @@ class AudioHook : SwitchHook("save_audio") {
                 }
             }
         }
-        var hasSaved = false
-        var (name, path) = arrayOfNulls<String>(2)
+        var hasSaved = false       // 标记视频是否已缓存，用于决定下载后是否删除视频文件
+        var (name, path) = arrayOfNulls<String>(2)  // 记录下载文件名和保存路径
+        // 替换壁纸服务方法，将其改为触发视频下载流程
         "com.sup.android.m_wallpaper.WallPaperService".replaceMethod(
             cl,
             "setLiveWallpaper",
@@ -80,6 +91,7 @@ class AudioHook : SwitchHook("save_audio") {
                 null
             )
         }
+        // 拦截DownloadTask的name和savePath设置，记录下载文件名和路径供后续音频提取使用
         val downloadTaskClass =
             "com.ss.android.socialbase.downloader.model.DownloadTask".findClass(cl)
         downloadTaskClass.hookBeforeMethod("name", String::class.java) { param ->
@@ -88,10 +100,12 @@ class AudioHook : SwitchHook("save_audio") {
         downloadTaskClass.hookBeforeMethod("savePath", String::class.java) { param ->
             path = param.args[0] as String
         }
+        // 下载成功回调：使用mp4parser从视频中提取音频轨，保存为AAC文件
         downListenerClass!!.hookAfterMethod(
             "onSuccessed",
             "com.ss.android.socialbase.downloader.model.DownloadInfo"
         ) { param ->
+            // itemId为-1表示是音频提取任务，跳过其他下载任务的回调
             param.thisObject.getObjectField(downConfig())?.callMethodAs<Long>("getItemId")
                 ?.checkUnless(-1L) { return@hookAfterMethod }
             val (audioDir, audioPath, videoPath) = listOf(
@@ -101,12 +115,14 @@ class AudioHook : SwitchHook("save_audio") {
             )
             runCatching {
                 File(audioDir).checkIf({ !exists() }) { mkdir() }
+                // 从MP4文件中提取音频轨（handler为"soun"），写入AAC文件
                 FileOutputStream(audioPath).use { fos ->
                     Movie().also { movie ->
                         MovieCreator.build(videoPath).tracks.find { "soun" == it.handler }
                             .let(movie::addTrack)
                     }.let(DefaultMp4Builder()::build).writeContainer(fos.channel)
                 }
+                // 音频提取成功后，如果视频原本未缓存则删除临时视频文件
                 hasSaved.check(false) { File(videoPath).delete() }
                 showStickyToast(
                     "已保存至DCIM/" +

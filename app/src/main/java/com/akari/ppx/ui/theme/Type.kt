@@ -6,7 +6,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-// Set of Material typography styles to start with
+/** 全局 Material 排版定义，body1 使用默认字体、正常粗细、16sp 字号 */
 val Typography = Typography(
     body1 = TextStyle(
         fontFamily = FontFamily.Default,

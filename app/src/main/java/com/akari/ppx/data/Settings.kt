@@ -6,8 +6,14 @@ import com.akari.ppx.data.Const.CATEGORY_TYPES
 import com.akari.ppx.data.model.CheckBoxItem
 import com.akari.ppx.utils.hideIcon
 
+/** 设置页面标签名称列表 */
 val prefTabs = listOf("主页", "辅助", "自动", "杂项", "关于")
 
+/**
+ * 按页面分类的设置项列表。
+ * 根据 [Page] 枚举的索引映射到对应的设置项集合，
+ * 包含纯净化、辅助功能、自动操作、杂项四大类设置。
+ */
 val prefItems: List<List<PrefItem?>> = prefTabs.mapIndexed { index, _ ->
     when (Page.fromIndex(index)) {
         Page.PURITY -> {
@@ -520,6 +526,10 @@ val prefItems: List<List<PrefItem?>> = prefTabs.mapIndexed { index, _ ->
 }
 
 
+/**
+ * 设置页面枚举，定义各页面的索引。
+ * @param index 页面在标签栏中的位置索引
+ */
 enum class Page(val index: Int) {
     PURITY(0),
     ASSIST(1),
@@ -527,18 +537,38 @@ enum class Page(val index: Int) {
     MISC(3);
 
     companion object {
+        /**
+         * 根据索引查找对应的页面枚举值。
+         * @param index 页面索引
+         * @return 对应的 [Page] 枚举值，索引无效时返回 null
+         */
         fun fromIndex(index: Int) = values().find { page -> page.index == index }
     }
 }
 
+/** 设置项标记接口，所有设置项类型均实现此接口 */
 sealed interface PrefItem
 
+/**
+ * 纯文本设置项，仅显示标题和摘要，点击执行回调。
+ * @param title 标题文本
+ * @param summary 摘要文本
+ * @param onClick 点击回调
+ */
 class TextItem(
     val title: String,
     val summary: String? = null,
     val onClick: (Context) -> Unit = { }
 ) : PrefItem
 
+/**
+ * 开关设置项，存储布尔类型的偏好值。
+ * @param key 存储键名
+ * @param title 标题文本
+ * @param summary 摘要文本
+ * @param dependency 依赖的开关 key
+ * @param onClick 开关状态变更回调
+ */
 class SwitchItem(
     val key: String,
     val title: String,
@@ -547,6 +577,14 @@ class SwitchItem(
     val onClick: (Context, Boolean) -> Unit = { _, _ -> }
 ) : PrefItem
 
+/**
+ * 文本编辑设置项，用户可输入自定义字符串值。
+ * @param key 存储键名
+ * @param title 标题文本
+ * @param default 默认值
+ * @param multi 是否支持多行输入
+ * @param dependency 依赖的开关 key
+ */
 class EditItem(
     val key: String,
     val title: String,
@@ -555,6 +593,14 @@ class EditItem(
     val dependency: String? = null
 ) : PrefItem
 
+/**
+ * 列表选择设置项，用户从预定义的键值对中选择一项。
+ * @param key 存储键名
+ * @param title 标题文本
+ * @param entries 选项映射（显示文本 -> 存储值）
+ * @param default 默认选中值
+ * @param dependency 依赖的开关 key
+ */
 class ListItem(
     val key: String,
     val title: String,
@@ -563,6 +609,14 @@ class ListItem(
     val dependency: String? = null
 ) : PrefItem
 
+/**
+ * 复选框列表设置项，支持同时选中多个选项。
+ * @param key 存储键名
+ * @param title 标题文本
+ * @param summary 摘要文本
+ * @param items 复选框选项列表
+ * @param dependency 依赖的开关 key
+ */
 class CheckBoxListItem(
     val key: String,
     val title: String,
@@ -571,6 +625,14 @@ class CheckBoxListItem(
     val dependency: String? = null
 ) : PrefItem
 
+/**
+ * 频道列表设置项，用于管理可拖拽排序的频道配置。
+ * @param key 存储键名
+ * @param title 标题文本
+ * @param dialogTitle 弹窗标题
+ * @param summary 摘要文本
+ * @param dependency 依赖的开关 key
+ */
 class ChannelListItem(
     val key: String,
     val title: String,
@@ -579,4 +641,5 @@ class ChannelListItem(
     val dependency: String? = null
 ) : PrefItem
 
+/** 设置项分隔线，用于在设置列表中分组显示 */
 object ItemDivider : PrefItem

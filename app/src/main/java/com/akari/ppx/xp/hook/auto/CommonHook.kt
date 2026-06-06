@@ -12,6 +12,22 @@ import com.akari.ppx.xp.hook.BaseHook
 import com.akari.ppx.xp.hook.auto.BrowseHook.Companion.isAuto
 import com.akari.ppx.xp.hook.auto.BrowseHook.Companion.viewPager
 
+/**
+ * 通用自动化Hook，是自动功能的核心调度器。
+ *
+ * 在详情页翻页(OnPageSelected)时根据开关配置依次执行：
+ * - **自动浏览**：延迟后自动翻到下一页，频率可配置
+ * - **自动点赞**：对当前内容自动点赞，支持自定义点赞样式
+ * - **自动踩**：对当前内容自动踩，支持频繁操作后暂停
+ * - **自动评论**：在翻页时或点赞时发送预设评论文本
+ *
+ * 此外还支持：
+ * - 点赞频繁失败时暂停自动浏览
+ * - 条件模式：仅在为帖子点赞时才发送评论
+ *
+ * @see BrowseHook 提供ViewPager引用
+ * @see WardHook 类似的条件触发收藏逻辑
+ */
 class CommonHook : BaseHook {
     override fun onHook() {
         val (isAutoBrowse, isDelayHandoff, isAutoDigg, isAutoDiss, isAutoDiggPause, isAutoDissPause, isAutoComment) = listOf<Boolean>(

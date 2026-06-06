@@ -20,6 +20,15 @@ import java.util.*
 import kotlin.concurrent.schedule
 import kotlin.system.exitProcess
 
+/**
+ * 激活提示与更新日志Hook。
+ *
+ * 在主Activity首次获得窗口焦点时执行：
+ * 1. 尝试关注开发者账号，若账号已被封禁(statusCode 13016/13018)则弹出提示并强制退出应用。
+ * 2. 检查版本号，若为新版本则弹出激活成功对话框，可选择直接进入或加入QQ群。
+ *
+ * 仅在首次窗口获焦时执行一次，通过 [init] 标记防止重复触发。
+ */
 class HintHook : BaseHook {
     override fun onHook() {
         var init = false
@@ -27,6 +36,7 @@ class HintHook : BaseHook {
             if (init) return@hookAfterMethod
             init = true
             with(param.thisObject as Activity) {
+                // 尝试关注开发者账号，用于检测模块是否被封禁
                 "com.sup.android.module.usercenter.UserCenterService".findClass(cl)
                     .callStaticMethod("getInstance")
                     ?.callMethod(
@@ -35,6 +45,7 @@ class HintHook : BaseHook {
                         AUTHOR_ID,
                         Proxy.newProxyInstance(cl, arrayOf(asyncCallbackClass)) { _, _, args ->
                             val status = args[0].callMethodAs<Int>("getStatusCode")
+                            // 13016/13018表示账号异常，提示用户并退出
                             if (status == 13016 || status == 13018) {
                                 showStickyToast(UNINSTALL_HINT)
                                 Timer().schedule(5000) { exitProcess(0) }

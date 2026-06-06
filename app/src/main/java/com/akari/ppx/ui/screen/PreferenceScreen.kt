@@ -24,6 +24,7 @@ import com.akari.ppx.utils.get
 import com.akari.ppx.utils.splitByOr
 import com.akari.ppx.utils.toJson
 
+/** 频道列表项的懒加载状态列表，从 DataStore 读取或使用默认值初始化 */
 val channelItems by lazy {
     Prefs.get<String>(CHANNEL_KEY)?.fromJsonList<ChannelItem>()?.toMutableStateList() ?: run {
         Prefs.set(CHANNEL_KEY, CHANNEL_DEFAULT.toJson())
@@ -31,6 +32,14 @@ val channelItems by lazy {
     }
 }
 
+/**
+ * 根据偏好项类型分发渲染对应的 Widget 组件。
+ *
+ * 支持的类型包括：文本偏好、开关偏好、列表选择偏好、编辑文本偏好、
+ * 复选框列表偏好、频道列表偏好。每种类型均与 DataStore 双向绑定。
+ *
+ * @param preference 偏好项配置，决定渲染哪种 Widget
+ */
 @Composable
 fun PreferenceItem(
     preference: Preference.PreferenceItem<*>,
@@ -119,6 +128,15 @@ fun PreferenceItem(
     }
 }
 
+/**
+ * 设置偏好页面，以懒加载列表形式展示当前标签页的所有偏好配置项。
+ *
+ * 根据 [index] 从 [prefItems] 中获取对应标签页的配置列表，
+ * 并将数据模型转换为 [Preference.PreferenceItem] 渲染到 UI。
+ *
+ * @param index 当前标签页索引
+ * @param state 懒加载列表的滚动状态，用于与外层 [com.google.accompanist.pager.HorizontalPager] 协同
+ */
 @Composable
 fun PreferenceScreen(
     index: Int,

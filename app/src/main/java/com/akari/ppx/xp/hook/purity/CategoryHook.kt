@@ -8,6 +8,14 @@ import com.akari.ppx.utils.*
 import com.akari.ppx.xp.Init.cl
 import com.akari.ppx.xp.hook.BaseHook
 
+/**
+ * 频道分类自定义Hook。
+ *
+ * 支持两项功能：
+ * - **自定义频道列表**：根据用户配置的频道项(通过 [ChannelItem] 模型)过滤频道列表，
+ *   仅保留勾选的频道，同时始终保留虾聊频道(parentChannel==52)。
+ * - **默认频道设置**：替换默认频道值，并Hook FeedTabAdapterV2使应用启动时直接跳转到指定频道。
+ */
 class CategoryHook : BaseHook {
     override fun onHook() {
         val defaultChannel =

@@ -22,6 +22,16 @@ import dalvik.system.DexFile
 import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 
+/**
+ * Xposed 模块入口类，实现 [IXposedHookLoadPackage] 接口。
+ *
+ * 处理两个目标包的加载：
+ * 1. 模块自身包名：Hook [MainActivity.isModuleActive] 使其返回 true，用于 UI 中显示激活状态。
+ * 2. 皮皮虾目标包名：在 [com.sup.android.safemode.SafeModeApplication.attachBaseContext] 中初始化模块，
+ *    通过 DexFile 扫描自动发现并实例化所有 [BaseHook] 子类，
+ *    在目标 Activity 的 onCreate 中逐一执行 Hook。
+ *    对于 [SwitchHook] 类型，会先检查对应的开关状态再决定是否执行。
+ */
 class Entry : IXposedHookLoadPackage {
     override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam) {
         when (lpparam.packageName) {

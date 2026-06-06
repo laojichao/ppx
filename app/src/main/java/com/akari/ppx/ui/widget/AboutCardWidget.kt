@@ -14,6 +14,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
+/**
+ * 关于页面的卡片组件，带圆角、阴影和点击事件。
+ *
+ * 内容以水平 [Row] 布局，左侧留 25dp 间距后渲染 [content]。
+ *
+ * @param modifier 修饰符
+ * @param backgroundColor 卡片背景色，默认为 Material surface 色
+ * @param onClick 卡片点击回调
+ * @param content 卡片内容
+ */
 @Composable
 fun AboutCardWidget(
     modifier: Modifier = Modifier,

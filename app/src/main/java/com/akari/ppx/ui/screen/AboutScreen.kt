@@ -28,6 +28,13 @@ import com.akari.ppx.ui.theme.ORANGE
 import com.akari.ppx.ui.widget.AboutCardWidget
 import com.akari.ppx.utils.*
 
+/**
+ * 关于页面，展示开发者信息、赞赏入口、项目源码、Telegram 频道、QQ 群等链接。
+ *
+ * 头像支持点击旋转动画。当模块激活时额外显示 QQ 群入口。
+ *
+ * @param isActive 模块是否已激活，控制 QQ 群卡片的显隐
+ */
 @Composable
 fun AboutScreen(isActive: Boolean) {
     val context = LocalContext.current

@@ -18,6 +18,18 @@ import com.akari.ppx.data.Preference
 import com.akari.ppx.data.Prefs
 import com.akari.ppx.utils.rememberState
 
+/**
+ * 编辑文本偏好组件，点击文本项弹出输入对话框。
+ *
+ * 支持单行和多行模式。多行模式下摘要显示数据条数，
+ * 单行模式下显示当前值。确认提交或重置为默认值。
+ *
+ * @param preference 编辑偏好配置
+ * @param value 当前文本值
+ * @param default 默认文本值，用于重置操作
+ * @param summary 自定义摘要生成函数，参数为 (当前值, 是否多行模式)
+ * @param onValueChange 文本值变更回调
+ */
 @Composable
 fun EditPreferenceWidget(
     preference: Preference.PreferenceItem.EditPreference,

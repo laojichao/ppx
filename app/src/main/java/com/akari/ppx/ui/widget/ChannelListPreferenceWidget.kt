@@ -18,6 +18,18 @@ import com.akari.ppx.data.model.ChannelItem
 import com.akari.ppx.utils.rememberState
 import org.burnoutcrew.reorderable.*
 
+/**
+ * 频道列表偏好组件，结合开关和可拖拽排序的弹窗列表。
+ *
+ * 开启开关后弹出对话框，展示频道列表项，支持长按拖拽排序和勾选操作。
+ * 关闭对话框时通过 [onDismiss] 持久化列表顺序和勾选状态。
+ *
+ * @param preference 频道列表偏好配置
+ * @param value 当前开关状态
+ * @param onValueChange 开关状态变更回调
+ * @param items 可观察的频道列表，支持拖拽排序
+ * @param onDismiss 对话框关闭时的回调，用于持久化数据
+ */
 @Composable
 fun ChannelListPreferenceWidget(
     preference: Preference.PreferenceItem.ChannelListPreference,

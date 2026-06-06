@@ -10,6 +10,17 @@ import com.akari.ppx.xp.Init.feedResponseClass
 import com.akari.ppx.xp.hook.BaseHook
 import java.util.regex.Pattern
 
+/**
+ * 信息流过滤Hook。
+ *
+ * 拦截信息流数据返回，根据多种条件过滤帖子：
+ * - **屏蔽帖子**：通过关键词或用户名匹配(支持正则表达式)过滤指定内容
+ * - **屏蔽官方账号帖子**：过滤认证描述中包含"官方账号"/"视频号"/"新媒体"的帖子
+ * - **屏蔽带货帖子**：过滤包含推广信息(promotionInfo)的帖子
+ * - **屏蔽直播帖子**：过滤LiveSaasFeedCell类型的直播帖子
+ *
+ * 使用倒序遍历确保移除元素时索引正确，各条件独立生效。
+ */
 class FeedHook : BaseHook {
     override fun onHook() {
         val conditions = listOf<Boolean>(

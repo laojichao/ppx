@@ -49,11 +49,19 @@ import com.akari.ppx.utils.openBrowser
 import com.akari.ppx.utils.rememberState
 import com.akari.ppx.utils.startPPX
 
+/**
+ * 主界面 Activity，承载模块状态展示、设置偏好页面及关于页面。
+ *
+ * 使用 Compose 构建 UI，通过 [HorizontalPager] 实现多标签页滑动切换，
+ * 包含浮动按钮用于快速启动皮皮虾应用，以及自动检查模块更新功能。
+ */
 class MainActivity : ComponentActivity() {
     private lateinit var scaffoldState: ScaffoldState
     private lateinit var scope: CoroutineScope
     private lateinit var fabVisible: MutableState<Boolean>
+    /** 上一次记录的滚动偏移量，用于判断滚动方向 */
     private var lastScrollOffset = 0
+    /** 当前滚动偏移量 */
     private var currentScrollOffset = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -197,12 +205,23 @@ class MainActivity : ComponentActivity() {
     }
 
     companion object {
+        /**
+         * 检测 Xposed 模块是否已在当前设备上激活。
+         *
+         * @param context 上下文，用于访问 ContentResolver
+         * @return 模块已激活返回 true，否则返回 false
+         */
         fun isModuleActive(context: Context) = runCatching {
             val uri = Uri.parse("content://me.weishu.exposed.CP/")
             context.contentResolver.call(uri, "active", null, null)?.getBoolean("active", false)
                 ?: false
         }.getOrDefault(false)
 
+        /**
+         * 创建跳转至 [MainActivity] 的 Intent 并启动。
+         *
+         * @param context 上下文，用于启动 Activity
+         */
         operator fun invoke(context: Context) = Intent().also {
             ComponentName(APPLICATION_ID, this::class.java.name.split("$")[0]).let(it::setComponent)
         }.let { context.startActivity(it) }

@@ -3,6 +3,11 @@ package com.akari.ppx.data
 import com.akari.ppx.BuildConfig.VERSION_NAME
 import com.akari.ppx.data.model.ChannelItem
 
+/**
+ * 全局常量定义。
+ * 包含应用名称、目标应用包名、偏好存储名称、各类 URI 地址、
+ * 频道分类默认配置等跨模块共享的常量。
+ */
 object Const {
     const val APP_NAME = "皮皮虾助手"
     const val TARGET_APP_ID = "com.sup.android.superb"

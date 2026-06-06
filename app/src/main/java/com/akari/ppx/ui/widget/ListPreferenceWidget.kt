@@ -19,6 +19,15 @@ import androidx.compose.ui.window.DialogProperties
 import com.akari.ppx.data.Preference
 import com.akari.ppx.data.Prefs
 
+/**
+ * 列表选择偏好组件，点击文本项弹出单选对话框。
+ *
+ * 使用 [RadioButton] 展示可选项，选中后自动关闭对话框并持久化。
+ *
+ * @param preference 列表偏好配置，包含可选项 entries
+ * @param value 当前选中项的值
+ * @param onValueChange 选中值变更回调
+ */
 @Composable
 fun ListPreferenceWidget(
     preference: Preference.PreferenceItem.ListPreference,

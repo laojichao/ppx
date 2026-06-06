@@ -27,6 +27,21 @@ import com.akari.ppx.ui.theme.LIGHT_PINK
 import com.akari.ppx.utils.rememberState
 import com.akari.ppx.utils.showToast
 
+/**
+ * 模块状态卡片组件，展示模块激活状态、版本信息和更新提示。
+ *
+ * 根据模块激活状态和版本适配情况动态显示不同颜色和图标：
+ * - 已激活且适配：粉色背景 + 对勾图标
+ * - 已激活但未适配：红色背景 + 警告图标
+ * - 未激活：黑色背景 + 错误图标
+ *
+ * 点击卡片弹出更新详情对话框，有更新时可跳转下载。
+ *
+ * @param isActive 模块是否已激活
+ * @param updates 版本更新信息的可变状态
+ * @param targetVersion 当前适配的目标皮皮虾版本号
+ * @param onClick 点击"获取更新"按钮的回调
+ */
 @Composable
 fun StatusCardWidget(
     isActive: Boolean,
